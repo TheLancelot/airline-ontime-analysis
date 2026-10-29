@@ -1,0 +1,17 @@
+top 8 airlines in usa
+Delta, United, American - Large mainline carriers, present at most big airports
+Southwest -	Keep, but it doesn’t serve JFK, ORD or DFW (it uses LGA, MDW and DAL), so airport choice matters
+Alaska, JetBlue	 - Keep
+Frontier - Keep, but it has a thin presence at some airports
+Allegiant - Questionable. It’s a leisure, point-to-point airline from smaller airports, so it often has no competitor on a route and may drop out of the benchmark
+
+--------------
+
+top 10 buziest airports in usa
+
+Atlanta, Dallas, Chicaco, Denver, LA, JFK New York, Orlando, Las Vegas, Miami, San Fransisco
+
+Use this rule: busiest airports by flights, kept only if at least 5 of the 8 airlines serve them. The route benchmark needs several airlines on the same route, so a hub dominated by one airline (like CLT or MSP) gives little to compare. Also keep a mix of congestion levels, otherwise O3 has no variation to work with.
+
+A starting list from memory (verify the volumes and coverage from your data): ATL, DFW, DEN, ORD, LAX, JFK, LAS, MCO, SEA, PHX. Reserves are SFO, BOS, MIA, EWR.
+JFK and ORD are known for long taxi-outs, and PHX and LAS generally have shorter ones.
