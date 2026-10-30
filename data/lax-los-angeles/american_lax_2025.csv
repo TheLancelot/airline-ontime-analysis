@@ -1,10 +1,3 @@
-Detailed Statistics Departures  
-Origin Airport: Los Angeles, CA: Los Angeles International (LAX)
-Airline: American Airlines Inc. (AA)
-Month(s): January, February, March, April, May, June, July, August, September, October, November, and December
-Day(s): 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30 and 31
-Year(s): 2025
-
 Carrier Code,Date (MM/DD/YYYY),Flight Number,Tail Number,Destination Airport,Scheduled departure time,Actual departure time,Scheduled elapsed time (Minutes),Actual elapsed time (Minutes),Departure delay (Minutes),Wheels-off time,Taxi-Out time (Minutes),Delay Carrier (Minutes),Delay Weather (Minutes),Delay National Aviation System (Minutes),Delay Security (Minutes),Delay Late Aircraft Arrival (Minutes)
 "AA","01/01/2025","0002","N116AN","JFK","08:00","07:56","331","288","-4","08:09","13","0","0","0","0","0"
 "AA","01/01/2025","0004","N103NN","JFK","11:30","12:11","331","285","41","12:26","15","0","0","0","0","0"
@@ -30041,5 +30034,3 @@ Carrier Code,Date (MM/DD/YYYY),Flight Number,Tail Number,Destination Airport,Sch
 "AA","12/31/2025","3198","N307UJ","ORD","17:30","17:29","250","224","-1","17:44","15","0","0","0","0","0"
 "AA","12/31/2025","3246","N544UW","MIA","22:59","22:53","300","322","-6","23:49","56","0","0","16","0","0"
 "AA","12/31/2025","3325","N425AN","MIA","11:46","11:39","309","277","-7","11:52","13","0","0","0","0","0"
-
- SOURCE: Bureau of Transportation Statistics
