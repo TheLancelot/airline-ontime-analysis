@@ -37,7 +37,17 @@ If your objective is to identify large airports that aren't dominated by one air
 LAS – Las Vegas
 MCO – Orlando
 
+calculate airline wise punctuality percentage, punctuality is defined by punctual if it reaches the destination within 15mins of scheduled, for that we will need the actual arrival time or arrival delay which we can calculate using available data in our table, arrival delay =Actual elapsed time (Minutes)- Scheduled elapsed time (Minutes) + Departure delay (Minutes)
+-------
+some problems/roadblocks/issues realized on the go:
 
+for padding - the general idea was to compare each airlines time with some kind of benchmark time for that route, now this wont work if that route is only covered by one or two airlines ///// what to do in such cases //// 
+
+if 79 airports are just covered by 1 airline, will the idea of padding hold here?say all 79 routes are just by Delta, will using this information help us in any way (can we see just that route different performances for the same airline? does this deviate from our plan/core study) if we are comparing between airlines? is our definition solely based on that padding?
+
+
+
+----------------
 delta from atl in 2025 - 237184
 united from atl in 2025 - 7160
 american from atl in 2025 - 6834
