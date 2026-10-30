@@ -43,7 +43,12 @@ some problems/roadblocks/issues realized on the go:
 
 for padding - the general idea was to compare each airlines time with some kind of benchmark time for that route, now this wont work if that route is only covered by one or two airlines ///// what to do in such cases //// 
 
-if 79 airports are just covered by 1 airline, will the idea of padding hold here?say all 79 routes are just by Delta, will using this information help us in any way (can we see just that route different performances for the same airline? does this deviate from our plan/core study) if we are comparing between airlines? is our definition solely based on that padding?
+if 79 airports are just covered by 1 airline, will the idea of padding hold here?say all 79 routes are just by Delta, will using this information help us in any way (can we see just that route different performances for the same airline? does this deviate from our plan/core study) if we are comparing between airlines? is our definition solely based on that padding? ---- if we are subsetting the data over routes covered by atleast 3 airlines then we might be dropping a huge chunk of available data, and in that case we can use like a 3 year frame (post covid)? to have enough datapoints
+
+
+
+
+
 
 
 
