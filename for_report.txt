@@ -7,11 +7,52 @@ Allegiant - Questionable. It’s a leisure, point-to-point airline from smaller 
 
 --------------
 
-top 10 buziest airports in usa
+top 10 buziest airports in usa based on total annual passenger traffic
 
-Atlanta, Dallas, Chicaco, Denver, LA, JFK New York, Orlando, Las Vegas, Miami, San Fransisco
+Atlanta(atl), Dallas(dfw), Chicaco(ord), Denver(den), LA(lax), JFK New York, Orlando(mco), Las Vegas(las), Miami(mia), San Fransisco(sfo) 
 
 Use this rule: busiest airports by flights, kept only if at least 5 of the 8 airlines serve them. The route benchmark needs several airlines on the same route, so a hub dominated by one airline (like CLT or MSP) gives little to compare. Also keep a mix of congestion levels, otherwise O3 has no variation to work with.
 
-A starting list from memory (verify the volumes and coverage from your data): ATL, DFW, DEN, ORD, LAX, JFK, LAS, MCO, SEA, PHX. Reserves are SFO, BOS, MIA, EWR.
+A starting list from memory (verify the volumes and coverage from your data): ATL, DFW, DEN, ORD, LAX, JFK, LAS, MCO, <<SEA, PHX>>. Reserves are SFO, BOS, MIA, EWR.
 JFK and ORD are known for long taxi-outs, and PHX and LAS generally have shorter ones.
+
+-------
+
+
+few things I have a doubt in --
+what timeframe of data to use?
+does that depend on if any airport is the main hub for some specific airline (eg atl for delta)
+is choosing one peak and one low month ok? (peak defined by number of flights or footfall or theoretical hypothesis?)
+should we do sampling of some kind? (few days for each month per airline per airport in a year)
+
+plot the month wise count of flights per airline for a few airports -- now can i use this as a baseline for choosing the months? if i see a clear pattern in most and least for lots of different airports?
+
+DFW and ATL: Extremely concentrated fortress hubs (for aa and delta)
+MIA: Strong American Airlines dominance.
+ORD, DEN and SFO: United is the largest airline, but competition is substantial.
+LAS: Southwest is the largest carrier, but does not control a majority.
+JFK, MCO and LAX: Highly competitive airports with no airline controlling a large share.
+
+If your objective is to identify large airports that aren't dominated by one airline, I'd particularly look at:
+LAS – Las Vegas
+MCO – Orlando
+
+
+delta from atl in 2025 - 237184
+united from atl in 2025 - 7160
+american from atl in 2025 - 6834
+Southwest from atl in 2025 - 21456
+alaska from atl in 2025 - 1532
+jetblue from atl in 2025 - 2267
+frontier from atl in 2025 - 15264
+
+
+delta from lax in 2025 - 36436
+united from lax in 2025 - 28036
+american from lax in 2025 - 30035
+Southwest from lax in 2025 - 24741
+alaska from lax in 2025 - 7843
+jetblue from lax in 2025 - 7770
+frontier from lax in 2025 - 5247
+
+
