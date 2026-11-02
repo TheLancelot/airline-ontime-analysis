@@ -45,8 +45,20 @@ for padding - the general idea was to compare each airlines time with some kind 
 
 if 79 airports are just covered by 1 airline, will the idea of padding hold here?say all 79 routes are just by Delta, will using this information help us in any way (can we see just that route different performances for the same airline? does this deviate from our plan/core study) if we are comparing between airlines? is our definition solely based on that padding? ---- if we are subsetting the data over routes covered by atleast 3 airlines then we might be dropping a huge chunk of available data, and in that case we can use like a 3 year frame (post covid)? to have enough datapoints
 
+-----
 
+to do plan of action
+decide about jfk
+1 - finalize padding calculation
 
+nk - clean individual datasets(null and all that, subset out the >1 destination coverage routes for ecah airport, also get the counts pre and post cleaning for each airport)
+
+for eg - 280k rows before and 210k after dropping single coverage routes
+
+data setup part - for multi coverage routes, pick routes only on some >x number of flights for all airlines else the benchmark (median comparision might not be robust (breakdown))
+keep track of airport wise counts of contested routes and uncontested routes
+
+combine all datasets, 
 
 
 
