@@ -9,7 +9,7 @@ Allegiant - Questionable. It’s a leisure, point-to-point airline from smaller 
 
 top 10 buziest airports in usa based on total annual passenger traffic
 
-Atlanta(atl), Dallas(dfw), Chicaco(ord), Denver(den), LA(lax), JFK New York, Orlando(mco), Las Vegas(las), Miami(mia), San Fransisco(sfo) 
+Atlanta(atl), Dallas(dfw), Chicago(ord), Denver(den), LA(lax), JFK New York, Orlando(mco), Las Vegas(las), Miami(mia), San Fransisco(sfo) 
 
 Use this rule: busiest airports by flights, kept only if at least 5 of the 8 airlines serve them. The route benchmark needs several airlines on the same route, so a hub dominated by one airline (like CLT or MSP) gives little to compare. Also keep a mix of congestion levels, otherwise O3 has no variation to work with.
 
@@ -59,6 +59,10 @@ data setup part - for multi coverage routes, pick routes only on some >x number 
 keep track of airport wise counts of contested routes and uncontested routes
 
 combine all datasets, 
+
+in report mention reasonings behind every data drop and choices and any supporting metric/number/fact for it
+
+
 
 
 
