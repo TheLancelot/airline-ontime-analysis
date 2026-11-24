@@ -47,6 +47,18 @@ def test_dashboard_page_and_auth_navigation_are_available():
     assert "window.location.assign(`/login?registered=1&username=" in register.text
 
 
+def test_landing_page_references_the_served_stylesheet():
+    client = TestClient(app)
+
+    landing = client.get("/")
+    stylesheet = client.get("/static/styles.css?v=2")
+
+    assert 'href="/static/styles.css?v=2"' in landing.text
+    assert stylesheet.status_code == 200
+    assert "text/css" in stylesheet.headers["content-type"]
+    assert ".site-header" in stylesheet.text
+
+
 def test_dashboard_api_returns_json_compatible_insights(monkeypatch):
     connection = FakeConnection()
     monkeypatch.setattr(dashboard_routes, "get_sql_server_connection", lambda: connection)
