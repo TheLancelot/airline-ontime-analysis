@@ -1,0 +1,137 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Admin console · Airline Insights</title>
+    <link rel="stylesheet" href="/static/styles.css" />
+  </head>
+  <body>
+    <header class="site-header">
+      <a class="brand" href="/">Airline<span>Insights</span></a>
+      <nav class="site-nav" aria-label="Main navigation">
+        <a href="/dashboard">Dashboard</a>
+        <a href="/chat">Ask a question</a>
+        <a class="active nav-admin" href="/admin">Admin console</a>
+      </nav>
+    </header>
+    <main class="app-shell">
+      <section class="page-heading">
+        <div>
+          <p class="eyebrow">ADMINISTRATOR ACCESS</p>
+          <h1>Read-only SQL console</h1>
+          <p>Queries are validated and restricted to the existing flight database tables.</p>
+        </div>
+      </section>
+      <div id="error" class="notice notice-error page-message" role="alert" hidden></div>
+      <section class="panel query-panel">
+        <form id="adminForm">
+          <label for="sql">SQL query</label>
+          <textarea id="sql" name="sql" rows="6" required placeholder="SELECT TOP 10 carrier_code, airline_name FROM dbo.Airline"></textarea>
+          <div class="toolbar">
+            <button class="button button-primary" type="submit">Run validated query</button>
+            <button class="button button-secondary" id="logsButton" type="button">View recent logs</button>
+          </div>
+        </form>
+        <div id="result" class="query-result" aria-live="polite"></div>
+      </section>
+    </main>
+    <script>
+      const errorBox = document.getElementById('error');
+      const result = document.getElementById('result');
+
+      function showError(text) {
+        errorBox.textContent = text;
+        errorBox.hidden = false;
+      }
+
+      function renderRows(container, columns, rows) {
+        if (!columns || !columns.length) return;
+        const table = document.createElement('table');
+        table.className = 'data-table';
+        const head = table.createTHead().insertRow();
+        columns.forEach((column) => {
+          const cell = document.createElement('th');
+          cell.textContent = column;
+          head.appendChild(cell);
+        });
+        const body = table.createTBody();
+        rows.forEach((row) => {
+          const tr = body.insertRow();
+          row.forEach((value) => {
+            const cell = tr.insertCell();
+            cell.textContent = value === null ? '—' : String(value);
+          });
+        });
+        container.appendChild(table);
+      }
+
+      async function sendRequest(url, options) {
+        const response = await fetch(url, { credentials: 'same-origin', ...options });
+        const text = await response.text();
+        let data = {};
+        try { data = text ? JSON.parse(text) : {}; } catch { data = {}; }
+        if (response.status === 401) {
+          window.location.assign('/login?next=admin');
+          return null;
+        }
+        if (!response.ok) {
+          showError(data.detail || 'The request could not be completed. Please try again.');
+          return null;
+        }
+        return data;
+      }
+
+      document.getElementById('adminForm').addEventListener('submit', async (event) => {
+        event.preventDefault();
+        errorBox.hidden = true;
+        result.replaceChildren();
+        result.textContent = 'Running query…';
+        const button = event.currentTarget.querySelector('button[type="submit"]');
+        button.disabled = true;
+        try {
+          const data = await sendRequest('/api/admin/query', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ sql: new FormData(event.currentTarget).get('sql') })
+          });
+          if (!data) {
+            result.replaceChildren();
+            return;
+          }
+          result.replaceChildren();
+          if (data.status === 'refused' || data.status === 'error') {
+            showError(data.reason || 'The query was not run.');
+            return;
+          }
+          renderRows(result, data.columns, data.rows);
+        } catch {
+          result.replaceChildren();
+          showError('We could not reach the server. Check your connection and try again.');
+        } finally {
+          button.disabled = false;
+        }
+      });
+
+      document.getElementById('logsButton').addEventListener('click', async () => {
+        errorBox.hidden = true;
+        result.replaceChildren();
+        result.textContent = 'Loading recent logs…';
+        try {
+          const data = await sendRequest('/api/admin/logs');
+          if (!data) {
+            result.replaceChildren();
+            return;
+          }
+          const pre = document.createElement('pre');
+          pre.className = 'response-pre';
+          pre.textContent = data.lines.join('\n') || 'No log entries yet.';
+          result.replaceChildren(pre);
+        } catch {
+          result.replaceChildren();
+          showError('We could not load the logs. Please try again.');
+        }
+      });
+    </script>
+  </body>
+</html>

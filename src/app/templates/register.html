@@ -1,0 +1,89 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Create account · Airline Insights</title>
+    <link rel="stylesheet" href="/static/styles.css" />
+  </head>
+  <body>
+    <header class="site-header">
+      <a class="brand" href="/">Airline<span>Insights</span></a>
+      <nav class="site-nav" aria-label="Main navigation">
+        <a href="/login">Log in</a>
+        <a class="active" href="/register">Create account</a>
+        <a class="nav-admin" href="/login?next=admin">Admin console</a>
+      </nav>
+    </header>
+    <main class="auth-shell">
+      <section class="auth-card">
+        <p class="eyebrow">GET STARTED</p>
+        <h1>Create your account</h1>
+        <p class="auth-subtitle">Create a user account to explore flight insights.</p>
+        <div id="message" class="notice" role="status" aria-live="polite" hidden></div>
+        <form id="registerForm">
+          <label for="username">Username</label>
+          <input id="username" name="username" autocomplete="username" minlength="3" maxlength="24" required />
+          <label for="password">Password</label>
+          <div class="password-field">
+            <input id="password" name="password" type="password" autocomplete="new-password" required />
+            <button class="password-toggle" type="button" aria-controls="password" aria-pressed="false">Show</button>
+          </div>
+          <p class="field-hint">At least 8 characters, including uppercase, lowercase, and a number.</p>
+          <button class="button button-primary submit-button" type="submit">Create account</button>
+        </form>
+        <p class="auth-switch">Already registered? <a href="/login">Log in</a></p>
+      </section>
+      <aside class="auth-aside">
+        <p class="eyebrow">BUILT FOR EXPLORATION</p>
+        <h2>Understand the patterns behind every flight.</h2>
+        <p>Your account opens a read-only dashboard and a natural-language way to explore the existing flight database.</p>
+      </aside>
+    </main>
+    <script>
+      const form = document.getElementById('registerForm');
+      const message = document.getElementById('message');
+
+      function showNotice(text, kind) {
+        message.textContent = text;
+        message.className = `notice ${kind}`;
+        message.hidden = false;
+      }
+
+      form.addEventListener('submit', async (event) => {
+        event.preventDefault();
+        const submitButton = form.querySelector('button[type="submit"]');
+        submitButton.disabled = true;
+        submitButton.textContent = 'Creating account…';
+        message.hidden = true;
+        const formData = new FormData(form);
+        const username = String(formData.get('username')).trim();
+        try {
+          const response = await fetch('/api/register', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ username, password: formData.get('password') })
+          });
+          const text = await response.text();
+          let data = {};
+          try {
+            data = text ? JSON.parse(text) : {};
+          } catch {
+            data = {};
+          }
+          if (!response.ok) {
+            showNotice(data.detail || 'We could not create your account. Please try again.', 'notice-error');
+            return;
+          }
+          window.location.assign(`/login?registered=1&username=${encodeURIComponent(username)}`);
+        } catch {
+          showNotice('We could not reach the server. Check your connection and try again.', 'notice-error');
+        } finally {
+          submitButton.disabled = false;
+          submitButton.textContent = 'Create account';
+        }
+      });
+    </script>
+    <script src="/static/app.js"></script>
+  </body>
+</html>

@@ -1,0 +1,155 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Ask a question · Airline Insights</title>
+    <link rel="stylesheet" href="/static/styles.css" />
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  </head>
+  <body>
+    <header class="site-header">
+      <a class="brand" href="/">Airline<span>Insights</span></a>
+      <nav class="site-nav" aria-label="Main navigation">
+        <a href="/dashboard">Dashboard</a>
+        <a class="active" href="/chat">Ask a question</a>
+        <a class="nav-admin" href="/login?next=admin">Admin console</a>
+      </nav>
+    </header>
+    <main class="app-shell">
+      <section class="page-heading">
+        <div>
+          <p class="eyebrow">NATURAL LANGUAGE EXPLORATION</p>
+          <h1>Ask about the flights</h1>
+          <p>Questions are answered using validated, read-only SQL against the flight database.</p>
+        </div>
+        <a class="button button-secondary" href="/dashboard">Back to dashboard</a>
+      </section>
+      <div id="error" class="notice notice-error page-message" role="alert" hidden></div>
+      <section class="panel">
+        <form id="chatForm" class="chat-form">
+          <label for="question">What would you like to know?
+            <input id="question" name="question" required placeholder="How many carriers are in the database?" />
+          </label>
+          <button class="button button-primary" type="submit">Ask question</button>
+        </form>
+      </section>
+      <section id="answer" class="panel" hidden>
+        <div class="panel-heading">
+          <div><h2 id="answerTitle">Answer</h2><p id="explanation"></p></div>
+        </div>
+        <div id="tableWrap" class="query-result"></div>
+        <details id="sqlDetails" class="sql-details">
+          <summary>View generated SQL</summary>
+          <pre id="generatedSql"></pre>
+        </details>
+        <div class="chart-wrap"><canvas id="chart"></canvas></div>
+      </section>
+    </main>
+    <script>
+      const form = document.getElementById('chatForm');
+      const errorBox = document.getElementById('error');
+      const answer = document.getElementById('answer');
+      const tableWrap = document.getElementById('tableWrap');
+      let chart;
+
+      function showError(text) {
+        errorBox.textContent = text;
+        errorBox.hidden = false;
+      }
+
+      function renderTable(columns, rows) {
+        if (!columns || !columns.length) return;
+        const table = document.createElement('table');
+        table.className = 'data-table';
+        const header = table.createTHead().insertRow();
+        columns.forEach((column) => {
+          const cell = document.createElement('th');
+          cell.textContent = column;
+          header.appendChild(cell);
+        });
+        const body = table.createTBody();
+        rows.forEach((row) => {
+          const tr = body.insertRow();
+          row.forEach((value) => {
+            const cell = tr.insertCell();
+            cell.textContent = value === null ? '—' : String(value);
+          });
+        });
+        tableWrap.appendChild(table);
+      }
+
+      form.addEventListener('submit', async (event) => {
+        event.preventDefault();
+        errorBox.hidden = true;
+        answer.hidden = true;
+        const button = form.querySelector('button[type="submit"]');
+        button.disabled = true;
+        button.textContent = 'Thinking…';
+
+        try {
+          const response = await fetch('/api/chat', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            credentials: 'same-origin',
+            body: JSON.stringify({ question: new FormData(form).get('question') })
+          });
+          const text = await response.text();
+          let data = {};
+          try { data = text ? JSON.parse(text) : {}; } catch { data = {}; }
+          if (response.status === 401) {
+            window.location.assign('/login');
+            return;
+          }
+          if (!response.ok) {
+            showError(data.detail || 'We could not answer that right now. Please try again.');
+            return;
+          }
+
+          tableWrap.replaceChildren();
+          document.getElementById('answerTitle').textContent =
+            data.status === 'refused' ? 'A quick note' : 'Here is what we found';
+          document.getElementById('explanation').textContent =
+            data.refusal_reason || data.explanation || '';
+          const generatedSql = document.getElementById('generatedSql');
+          generatedSql.textContent = data.sql || '';
+          document.getElementById('sqlDetails').hidden = !data.sql;
+
+          if (data.status === 'error') {
+            showError('The query could not be completed. Check the database connection and try again.');
+            return;
+          }
+          if (data.status === 'refused') {
+            showError(data.refusal_reason || 'This request is outside the supported scope.');
+            return;
+          }
+
+          answer.hidden = false;
+          renderTable(data.columns, data.rows || []);
+          if (chart) {
+            chart.destroy();
+            chart = undefined;
+          }
+          if (window.Chart && data.rows && data.rows.length && data.columns.length > 1) {
+            const values = data.rows.map((row) => Number(row[1]));
+            if (values.every(Number.isFinite)) {
+              chart = new Chart(document.getElementById('chart'), {
+                type: 'bar',
+                data: {
+                  labels: data.rows.map((row) => String(row[0])),
+                  datasets: [{ label: data.columns[1], data: values, backgroundColor: '#22a58d' }]
+                },
+                options: { maintainAspectRatio: false, responsive: true, plugins: { legend: { display: false } } }
+              });
+            }
+          }
+        } catch {
+          showError('We could not reach the server. Check your connection and try again.');
+        } finally {
+          button.disabled = false;
+          button.textContent = 'Ask question';
+        }
+      });
+    </script>
+  </body>
+</html>

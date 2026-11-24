@@ -1,0 +1,121 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Dashboard · Airline Insights</title>
+    <link rel="stylesheet" href="/static/styles.css" />
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  </head>
+  <body>
+    <header class="site-header">
+      <a class="brand" href="/">Airline<span>Insights</span></a>
+      <nav class="site-nav" aria-label="Main navigation">
+        <a class="active" href="/dashboard">Dashboard</a>
+        <a href="/chat">Ask a question</a>
+        <a class="nav-admin" href="/login?next=admin">Admin console</a>
+      </nav>
+    </header>
+    <main class="app-shell">
+      <div id="adminNotice" class="notice notice-error page-message" role="status" hidden>
+        This account does not have admin access. You are signed in to the user dashboard.
+      </div>
+      <section class="page-heading">
+        <div>
+          <p class="eyebrow">YOUR FLIGHT DATA OVERVIEW</p>
+          <h1>Performance snapshot</h1>
+          <p>A quick look at the airlines, airports, and delay patterns in the database.</p>
+        </div>
+        <a class="button button-primary" href="/chat">Ask about the data</a>
+      </section>
+      <div id="dashboardMessage" class="notice page-message" role="status" aria-live="polite" hidden></div>
+      <section class="dashboard-grid" aria-label="Flight data summary">
+        <article class="metric-card"><div class="metric-label">Flight records</div><div class="metric-value" id="totalFlights">—</div><div class="metric-note">In the current dataset</div></article>
+        <article class="metric-card"><div class="metric-label">Carriers</div><div class="metric-value" id="totalCarriers">—</div><div class="metric-note">Airlines represented</div></article>
+        <article class="metric-card"><div class="metric-label">Airports</div><div class="metric-value" id="totalAirports">—</div><div class="metric-note">In the airport reference table</div></article>
+        <article class="metric-card"><div class="metric-label">Average arrival delay</div><div class="metric-value" id="averageDelay">—</div><div class="metric-note">Minutes · negative values mean early</div></article>
+      </section>
+      <section class="panel">
+        <div class="panel-heading">
+          <div>
+            <h2>Average arrival delay by carrier</h2>
+            <p>Only flights with a recorded arrival delay are included. Negative values mean early arrivals.</p>
+          </div>
+          <span class="feature-icon">CARRIER COMPARISON</span>
+        </div>
+        <div class="chart-wrap"><canvas id="delayChart" aria-label="Monthly average arrival delay chart"></canvas></div>
+      </section>
+      <section class="panel">
+        <div class="panel-heading">
+          <div><h2>Explore the data</h2><p>Ask a plain-language question and inspect the validated SQL.</p></div>
+          <a class="button button-secondary" href="/chat">Open chat</a>
+        </div>
+      </section>
+    </main>
+    <script>
+      const notice = document.getElementById('dashboardMessage');
+      if (new URLSearchParams(location.search).get('admin') === 'required') {
+        document.getElementById('adminNotice').hidden = false;
+      }
+
+      function showDashboardError(message) {
+        notice.textContent = message;
+        notice.className = 'notice notice-error page-message';
+        notice.hidden = false;
+      }
+
+      async function loadDashboard() {
+        try {
+          const response = await fetch('/api/dashboard', { credentials: 'same-origin' });
+          const text = await response.text();
+          let data = {};
+          try { data = text ? JSON.parse(text) : {}; } catch { data = {}; }
+          if (response.status === 401) {
+            window.location.assign('/login');
+            return;
+          }
+          if (!response.ok) {
+            showDashboardError(data.detail || 'We could not load dashboard insights. Please try again.');
+            return;
+          }
+
+          const metrics = data.metrics;
+          document.getElementById('totalFlights').textContent = Number(metrics.total_flights).toLocaleString();
+          document.getElementById('totalCarriers').textContent = Number(metrics.total_carriers).toLocaleString();
+          document.getElementById('totalAirports').textContent = Number(metrics.total_airports).toLocaleString();
+          const averageDelay = metrics.average_arrival_delay;
+          document.getElementById('averageDelay').textContent =
+            averageDelay === null ? 'N/A' : `${Number(averageDelay).toFixed(1)} min`;
+
+          if (window.Chart && data.carrier_delays.length) {
+            new Chart(document.getElementById('delayChart'), {
+              type: 'bar',
+              data: {
+                labels: data.carrier_delays.map((item) => item.carrier),
+                datasets: [{
+                  label: 'Average arrival delay (minutes)',
+                  data: data.carrier_delays.map((item) => item.average_delay),
+                  backgroundColor: '#22a58d',
+                  borderRadius: 5
+                }]
+              },
+              options: {
+                maintainAspectRatio: false,
+                responsive: true,
+                plugins: { legend: { display: false } },
+                scales: {
+                  x: { grid: { display: false } },
+                  y: { title: { display: true, text: 'Minutes' }, grid: { color: '#edf2f2' } }
+                }
+              }
+            });
+          }
+        } catch {
+          showDashboardError('We could not reach the server. Check your connection and try again.');
+        }
+      }
+
+      loadDashboard();
+    </script>
+  </body>
+</html>

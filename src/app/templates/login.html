@@ -1,0 +1,109 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Log in · Airline Insights</title>
+    <link rel="stylesheet" href="/static/styles.css" />
+  </head>
+  <body>
+    <header class="site-header">
+      <a class="brand" href="/">Airline<span>Insights</span></a>
+      <nav class="site-nav" aria-label="Main navigation">
+        <a class="active" href="/login">Log in</a>
+        <a href="/register">Create account</a>
+        <a class="nav-admin" href="/login?next=admin">Admin console</a>
+      </nav>
+    </header>
+    <main class="auth-shell">
+      <section class="auth-card">
+        <p class="eyebrow">WELCOME BACK</p>
+        <h1>Log in to your account</h1>
+        <p class="auth-subtitle">Your flight insights are just a moment away.</p>
+        <div id="message" class="notice" role="status" aria-live="polite" hidden></div>
+        <form id="loginForm">
+          <label for="username">Username</label>
+          <input id="username" name="username" autocomplete="username" required />
+          <label for="password">Password</label>
+          <div class="password-field">
+            <input id="password" name="password" type="password" autocomplete="current-password" required />
+            <button class="password-toggle" type="button" aria-controls="password" aria-pressed="false">Show</button>
+          </div>
+          <button class="button button-primary submit-button" type="submit">Log in</button>
+        </form>
+        <p class="auth-switch">New here? <a href="/register">Create an account</a></p>
+      </section>
+      <aside class="auth-aside">
+        <p class="eyebrow">ONE ACCOUNT, THE RIGHT DESTINATION</p>
+        <h2>Get straight to what you need.</h2>
+        <p>After login, regular users go to the insights dashboard. Admin accounts open the SQL console automatically.</p>
+      </aside>
+    </main>
+    <script>
+      const form = document.getElementById('loginForm');
+      const message = document.getElementById('message');
+      const params = new URLSearchParams(window.location.search);
+      const usernameInput = document.getElementById('username');
+      usernameInput.value = params.get('username') || '';
+
+      function showNotice(text, kind) {
+        message.textContent = text;
+        message.className = `notice ${kind}`;
+        message.hidden = false;
+      }
+
+      function setBusy(busy) {
+        const button = form.querySelector('button[type="submit"]');
+        button.disabled = busy;
+        button.textContent = busy ? 'Logging in…' : 'Log in';
+      }
+
+      const registered = params.get('registered');
+      if (registered === '1') {
+        showNotice('Your account is ready. Log in to continue to your dashboard.', 'notice-success');
+      } else if (params.get('admin') === 'required') {
+        showNotice('This account does not have admin access. You are signed in to the user dashboard instead.', 'notice-error');
+      }
+
+      form.addEventListener('submit', async (event) => {
+        event.preventDefault();
+        setBusy(true);
+        message.hidden = true;
+        const formData = new FormData(form);
+        try {
+          const response = await fetch('/api/login', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            credentials: 'same-origin',
+            body: JSON.stringify({
+              username: formData.get('username'),
+              password: formData.get('password')
+            })
+          });
+          const text = await response.text();
+          let data = {};
+          try {
+            data = text ? JSON.parse(text) : {};
+          } catch {
+            data = {};
+          }
+          if (!response.ok) {
+            showNotice(data.detail || 'We could not log you in. Please check your details and try again.', 'notice-error');
+            return;
+          }
+          const wantsAdmin = params.get('next') === 'admin';
+          if (wantsAdmin && data.role !== 'admin') {
+            window.location.assign('/dashboard?admin=required');
+            return;
+          }
+          window.location.assign(data.role === 'admin' ? '/admin' : '/dashboard');
+        } catch {
+          showNotice('We could not reach the server. Check your connection and try again.', 'notice-error');
+        } finally {
+          setBusy(false);
+        }
+      });
+    </script>
+    <script src="/static/app.js"></script>
+  </body>
+</html>
