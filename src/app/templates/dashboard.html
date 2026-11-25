@@ -26,7 +26,7 @@
         <div>
           <p class="eyebrow">YOUR FLIGHT DATA OVERVIEW</p>
           <h1>Performance snapshot</h1>
-          <p>A quick look at the airlines, airports, and delay patterns in the database.</p>
+          <p>A quick look at airline, airport, and delay patterns. Results are briefly cached to reduce repeat database work.</p>
         </div>
         <a class="button button-primary" href="/chat">Ask about the data</a>
       </section>
@@ -36,6 +36,8 @@
         <article class="metric-card"><div class="metric-label">Carriers</div><div class="metric-value" id="totalCarriers">—</div><div class="metric-note">Airlines represented</div></article>
         <article class="metric-card"><div class="metric-label">Airports</div><div class="metric-value" id="totalAirports">—</div><div class="metric-note">In the airport reference table</div></article>
         <article class="metric-card"><div class="metric-label">Average arrival delay</div><div class="metric-value" id="averageDelay">—</div><div class="metric-note">Minutes · negative values mean early</div></article>
+        <article class="metric-card"><div class="metric-label">On-time arrivals</div><div class="metric-value" id="onTimeArrivals">—</div><div class="metric-note">Arrival delay ≤ 15 min · excludes missing values</div></article>
+        <article class="metric-card"><div class="metric-label">Average departure delay</div><div class="metric-value" id="averageDepartureDelay">—</div><div class="metric-note">Minutes · negative values mean early</div></article>
       </section>
       <section class="panel">
         <div class="panel-heading">
@@ -88,6 +90,14 @@
           const averageDelay = metrics.average_arrival_delay;
           document.getElementById('averageDelay').textContent =
             averageDelay === null ? 'N/A' : `${Number(averageDelay).toFixed(1)} min`;
+          const onTimePercentage = metrics.on_time_arrival_percentage;
+          document.getElementById('onTimeArrivals').textContent =
+            onTimePercentage === null ? 'N/A' : `${Number(onTimePercentage).toFixed(1)}%`;
+          const averageDepartureDelay = metrics.average_departure_delay;
+          document.getElementById('averageDepartureDelay').textContent =
+            averageDepartureDelay === null
+              ? 'N/A'
+              : `${Number(averageDepartureDelay).toFixed(1)} min`;
 
           if (window.Chart && data.carrier_delays.length) {
             new Chart(document.getElementById('delayChart'), {
@@ -108,7 +118,7 @@
                 scales: {
                   x: {
                     grid: { display: false },
-                    ticks: { autoSkip: true, minRotation: 30, maxRotation: 60 }
+                    ticks: { autoSkip: true, minRotation: 0, maxRotation: 60 }
                   },
                   y: { title: { display: true, text: 'Minutes' }, grid: { color: '#edf2f2' } }
                 }

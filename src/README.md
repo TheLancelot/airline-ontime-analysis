@@ -1,4 +1,4 @@
-# Airline On-Time DBMS Security Demo
+# Airline On-Time Database system and app
 
 The DBMS project is isolated in this `src` folder. The sibling analysis data and notebooks remain in the workspace root. The existing SQL Server database is read-only from this app; the app does not create or alter database objects.
 
@@ -32,6 +32,8 @@ Use the shared virtual environment:
 ```
 
 Open `http://127.0.0.1:8000`. The landing page links to registration, login, and the admin sign-in flow. Registration leads to login; after login, regular users go to the dashboard and admins go to the SQL console. Authenticated pages greet the signed-in user and provide a logout action.
+
+Dashboard API results are cached in memory for five minutes by default to avoid repeating the full-table aggregates on every page visit. Set `DASHBOARD_CACHE_TTL_SECONDS` in `.env` to change this interval. Cache storage is per app process; restarting the app clears it.
 
 ## Create an admin account
 
