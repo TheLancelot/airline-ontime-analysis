@@ -35,12 +35,14 @@ async def dashboard_data(current_user: dict = Depends(get_current_user)):
         cursor.execute(
             """
             SELECT
-                carrier_code,
+                airline.airline_name,
                 AVG(CAST(arrival_delay_minutes AS FLOAT)) AS average_arrival_delay
-            FROM dbo.FlightInstance
-            WHERE arrival_delay_minutes IS NOT NULL
-            GROUP BY carrier_code
-            ORDER BY carrier_code
+            FROM dbo.FlightInstance AS flight
+            INNER JOIN dbo.Airline AS airline
+                ON airline.carrier_code = flight.carrier_code
+            WHERE flight.arrival_delay_minutes IS NOT NULL
+            GROUP BY airline.carrier_code, airline.airline_name
+            ORDER BY airline.airline_name
             """
         )
         carrier_delays = cursor.fetchall()
@@ -64,7 +66,7 @@ async def dashboard_data(current_user: dict = Depends(get_current_user)):
             ),
         },
         "carrier_delays": [
-            {"carrier": row[0].strip(), "average_delay": round(float(row[1]), 1)}
+            {"airline_name": row[0].strip(), "average_delay": round(float(row[1]), 1)}
             for row in carrier_delays
         ],
     }

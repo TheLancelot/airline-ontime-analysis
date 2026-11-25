@@ -1,0 +1,68 @@
+flowchart LR
+  subgraph PREP["Offline data preparation — before app runtime"]
+    CSV["BTS on-time CSV files"] --> ETL["Local load / transform<br/>Clean and map CSV columns"]
+    ETL -->|"preload existing schema"| FLIGHTS
+  end
+
+  subgraph CLIENT["Browser frontend"]
+    USER["User"]
+    ADMIN["Admin"]
+    UI["Register / Login<br/>Dashboard / Chat / Admin Console"]
+    OUT["Results in UI<br/>Dashboard metrics + chart<br/>Chat table + explanation<br/>Generated SQL visible to admins only<br/>Admin query results + logs"]
+    USER --> UI
+    ADMIN --> UI
+  end
+
+  subgraph APP["FastAPI application"]
+    HEADERS["HTTP middleware<br/>Security headers"]
+    AUTH["Auth + RBAC dependencies<br/>Argon2 verify · JWT HttpOnly cookie<br/>Role check: user / admin"]
+    ROUTES["Protected API routes<br/>/api/chat<br/>/api/dashboard<br/>/api/admin/query<br/>/api/admin/logs"]
+    PROMPT["Prompt assembly<br/>Schema + business context<br/>Few-shot examples + rules"]
+    VALIDATOR["SQL guardrail<br/>SQLGlot T-SQL AST<br/>SELECT-only · dbo table allowlist<br/>Block comments, batches, DML,<br/>system objects, dynamic SQL<br/>TOP default · fetch max 50"]
+    DASH["Dashboard fixed aggregate SELECTs<br/>No LLM generation"]
+    LOG["Rotating application log<br/>Auth · chat · admin · blocked/error events"]
+
+    HEADERS --> AUTH --> ROUTES
+    ROUTES -->|"chat question"| PROMPT
+    PROMPT -->|"model proposal"| GEMINI
+    GEMINI -->|"candidate SQL"| VALIDATOR
+    ROUTES -->|"admin manual SQL"| VALIDATOR
+    ROUTES --> DASH
+    ROUTES -.-> LOG
+  end
+
+  subgraph LOCAL["Local app files"]
+    USERS["User store · JSON file<br/>username · password hash · role<br/>Not a separate database"]
+  end
+
+  subgraph EXTERNAL["External service"]
+    GEMINI["Gemini API<br/>google-genai SDK<br/>gemini-3.5-flash-lite<br/>Structured JSON response"]
+  end
+
+  subgraph SQL["Existing SQL Server · AirlinesProject"]
+    FLIGHTS["Read-only flight database<br/><br/>dbo.Airline<br/>dbo.Airport<br/>dbo.FlightInstance"]
+    FK["FlightInstance.carrier_code → Airline<br/>origin_airport_code → Airport<br/>destination_airport_code → Airport"]
+    FLIGHTS --- FK
+  end
+
+  UI -->|"login / requests"| HEADERS
+  AUTH <-->|"lookup / save account"| USERS
+  VALIDATOR -->|"validated SELECT only"| FLIGHTS
+  DASH -->|"predefined SELECTs"| FLIGHTS
+  FLIGHTS -->|"rows / aggregates"| ROUTES
+  ROUTES -->|"JSON responses"| OUT
+  OUT --> UI
+
+  classDef client fill:#e3f5f1,stroke:#83b9aa,color:#183143,stroke-width:1.5px;
+  classDef backend fill:#ffffff,stroke:#98c9bf,color:#183143,stroke-width:1.5px;
+  classDef guard fill:#fff5df,stroke:#d9b866,color:#183143,stroke-width:1.8px;
+  classDef database fill:#eaf0f8,stroke:#9eb4c2,color:#183143,stroke-width:1.5px;
+  classDef external fill:#edf4fc,stroke:#a8bed6,color:#183143,stroke-width:1.5px;
+  classDef local fill:#f8f2e8,stroke:#ddc89e,color:#183143,stroke-width:1.5px;
+
+  class USER,ADMIN,UI,OUT client;
+  class HEADERS,AUTH,ROUTES,PROMPT,DASH,LOG backend;
+  class VALIDATOR guard;
+  class FLIGHTS,FK database;
+  class GEMINI external;
+  class USERS local;

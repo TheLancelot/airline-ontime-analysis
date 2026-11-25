@@ -1,0 +1,229 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1920" height="1080" viewBox="0 0 1920 1080" role="img" aria-labelledby="title description">
+  <title id="title">Airline On-Time DBMS Security Application Architecture</title>
+  <desc id="description">A presentation diagram showing offline CSV loading, browser and FastAPI auth, Gemini SQL proposal, SQL validation, dashboard queries, the local JSON user store, logs, and the three-table SQL Server database.</desc>
+  <defs>
+    <marker id="arrow" markerWidth="12" markerHeight="12" refX="10" refY="6" orient="auto" markerUnits="strokeWidth">
+      <path d="M1,1 L11,6 L1,11 Z" fill="#456174"/>
+    </marker>
+    <marker id="arrowTeal" markerWidth="12" markerHeight="12" refX="10" refY="6" orient="auto" markerUnits="strokeWidth">
+      <path d="M1,1 L11,6 L1,11 Z" fill="#087e83"/>
+    </marker>
+    <marker id="arrowAmber" markerWidth="12" markerHeight="12" refX="10" refY="6" orient="auto" markerUnits="strokeWidth">
+      <path d="M1,1 L11,6 L1,11 Z" fill="#b7791f"/>
+    </marker>
+    <filter id="shadow" x="-15%" y="-15%" width="130%" height="140%">
+      <feDropShadow dx="0" dy="4" stdDeviation="7" flood-color="#173a45" flood-opacity=".07"/>
+    </filter>
+    <style>
+      text { font-family: "Segoe UI", Arial, sans-serif; fill: #183143; }
+      .title { font-size: 34px; font-weight: 750; letter-spacing: -.5px; }
+      .subtitle { font-size: 16px; fill: #607786; }
+      .section { font-size: 13px; font-weight: 750; letter-spacing: 1.5px; fill: #087e83; }
+      .head { font-size: 19px; font-weight: 700; }
+      .subhead { font-size: 15px; font-weight: 700; }
+      .body { font-size: 14px; fill: #526a78; }
+      .small { font-size: 12px; fill: #687e89; }
+      .tiny { font-size: 11px; fill: #728791; }
+      .mono { font-family: Consolas, "Courier New", monospace; font-size: 12px; fill: #284859; }
+      .card { fill: #ffffff; stroke: #dce7e9; stroke-width: 1.4; }
+      .backend { fill: #f0f8f7; stroke: #aad2cc; stroke-width: 1.6; }
+      .external { fill: #f7f9fb; stroke: #cad7df; stroke-width: 1.5; }
+      .tealbox { fill: #e3f5f1; stroke: #9acfc3; stroke-width: 1.2; }
+      .navybox { fill: #eaf0f8; stroke: #b6c8dd; stroke-width: 1.2; }
+      .amberbox { fill: #fff5df; stroke: #e8c984; stroke-width: 1.2; }
+      .arrow { fill: none; stroke: #456174; stroke-width: 2.2; marker-end: url(#arrow); }
+      .arrow-teal { fill: none; stroke: #087e83; stroke-width: 2.5; marker-end: url(#arrowTeal); }
+      .arrow-amber { fill: none; stroke: #b7791f; stroke-width: 2.2; marker-end: url(#arrowAmber); }
+      .dashed { stroke-dasharray: 8 6; }
+      .label-bg { fill: #f8fbfb; stroke: #e0e9eb; stroke-width: .8; }
+    </style>
+  </defs>
+
+  <rect width="1920" height="1080" fill="#f4f8f8"/>
+  <circle cx="1770" cy="50" r="205" fill="#e2f4ef" opacity=".58"/>
+  <circle cx="65" cy="1010" r="230" fill="#eaf1f8" opacity=".42"/>
+
+  <text x="54" y="58" class="title">Airline On-Time DBMS Security App</text>
+  <text x="56" y="87" class="subtitle">High-level architecture · trusted data in, guarded read-only queries through, clear insights out</text>
+  <rect x="1638" y="40" width="225" height="34" rx="17" fill="#dff3ed"/>
+  <text x="1750" y="62" text-anchor="middle" class="section">LOCAL UNIVERSITY PROJECT</text>
+
+  <!-- CSV data is prepared before the web application runs. -->
+  <rect x="40" y="112" width="1840" height="178" rx="20" fill="#ffffff" stroke="#dce7e9" stroke-width="1.4"/>
+  <text x="68" y="143" class="section">DATA PREPARATION · BEFORE APP RUNTIME</text>
+  <g filter="url(#shadow)">
+    <rect x="72" y="163" width="280" height="94" rx="14" class="card"/>
+    <rect x="72" y="163" width="7" height="94" rx="3" fill="#46a98f"/>
+    <text x="100" y="196" class="subhead">BTS on-time CSV files</text>
+    <text x="100" y="222" class="body">Source flight records</text>
+    <text x="100" y="243" class="small">Prepared locally for the project</text>
+
+    <rect x="490" y="163" width="405" height="94" rx="14" class="card"/>
+    <rect x="490" y="163" width="7" height="94" rx="3" fill="#8299bb"/>
+    <text x="518" y="196" class="subhead">Offline load / transform</text>
+    <text x="518" y="222" class="body">Clean · map columns · load schema</text>
+    <text x="518" y="243" class="small">One-time data preparation, not a web route</text>
+  </g>
+  <path d="M352 210 H480" class="arrow-teal"/>
+  <path d="M895 210 H1850 V680 H1715 V690" class="arrow-teal"/>
+  <rect x="1055" y="185" width="300" height="48" rx="11" class="label-bg"/>
+  <text x="1205" y="205" text-anchor="middle" class="small">Load into existing SQL Server</text>
+  <text x="1205" y="222" text-anchor="middle" class="tiny">No ingestion runs inside the app</text>
+
+  <!-- Browser frontend -->
+  <g filter="url(#shadow)">
+    <rect x="52" y="335" width="302" height="576" rx="20" class="card"/>
+    <path d="M52 355 Q52 335 72 335 H334 Q354 335 354 355 V397 H52 Z" fill="#e7f4f1"/>
+  </g>
+  <text x="78" y="366" class="section">CLIENT</text>
+  <text x="78" y="389" class="head">Browser frontend</text>
+  <text x="78" y="429" class="subhead">Available features</text>
+  <rect x="78" y="447" width="250" height="42" rx="9" class="tealbox"/>
+  <text x="96" y="474" class="body">Register / log in</text>
+  <rect x="78" y="500" width="250" height="42" rx="9" class="tealbox"/>
+  <text x="96" y="527" class="body">Dashboard + visual summary</text>
+  <rect x="78" y="553" width="250" height="42" rx="9" class="tealbox"/>
+  <text x="96" y="580" class="body">Natural-language chat</text>
+  <rect x="78" y="606" width="250" height="42" rx="9" class="tealbox"/>
+  <text x="96" y="633" class="body">Admin SQL console + logs</text>
+  <line x1="78" y1="671" x2="328" y2="671" stroke="#e1eaec"/>
+  <text x="78" y="700" class="subhead">Displays</text>
+  <text x="82" y="728" class="body">• Dashboard metrics + chart</text>
+  <text x="82" y="754" class="body">• Chat result table + explanation</text>
+  <text x="82" y="780" class="body">• Generated SQL · admins only</text>
+  <text x="82" y="806" class="body">• Admin results + recent logs</text>
+  <rect x="78" y="836" width="250" height="51" rx="10" fill="#f7fafb" stroke="#e2eaec"/>
+  <text x="94" y="858" class="small">Roles are enforced by protected API</text>
+  <text x="94" y="876" class="small">routes, not just by hiding UI links.</text>
+
+  <!-- FastAPI application boundary -->
+  <rect x="378" y="328" width="974" height="584" rx="22" class="backend"/>
+  <text x="406" y="362" class="section">APPLICATION BACKEND · FASTAPI</text>
+  <text x="406" y="385" class="small">Same-origin pages + JSON APIs · HTTP security headers</text>
+
+  <rect x="405" y="405" width="922" height="118" rx="14" fill="#ffffff" stroke="#b8d9d4" stroke-width="1.2"/>
+  <text x="427" y="433" class="subhead">Authentication &amp; role checks</text>
+  <rect x="427" y="448" width="260" height="54" rx="9" class="navybox"/>
+  <text x="557" y="471" text-anchor="middle" class="small">Argon2 password hashing</text>
+  <text x="557" y="489" text-anchor="middle" class="tiny">Public registration creates user role</text>
+  <rect x="704" y="448" width="270" height="54" rx="9" class="navybox"/>
+  <text x="839" y="471" text-anchor="middle" class="small">JWT in HttpOnly cookie</text>
+  <text x="839" y="489" text-anchor="middle" class="tiny">Signed identity + user/admin role</text>
+  <rect x="991" y="448" width="313" height="54" rx="9" class="navybox"/>
+  <text x="1147" y="471" text-anchor="middle" class="small">Verify token · enforce API role</text>
+  <text x="1147" y="489" text-anchor="middle" class="tiny">401 unauthenticated · 403 wrong role</text>
+  <path d="M687 475 H696" class="arrow"/>
+  <path d="M974 475 H983" class="arrow"/>
+
+  <text x="405" y="558" class="section">QUERY REQUEST PATHS</text>
+  <rect x="405" y="575" width="218" height="208" rx="13" class="card"/>
+  <text x="427" y="606" class="subhead">API routes</text>
+  <text x="427" y="635" class="mono">/api/chat</text>
+  <text x="427" y="658" class="mono">/api/dashboard</text>
+  <text x="427" y="681" class="mono">/api/admin/query</text>
+  <text x="427" y="704" class="mono">/api/admin/logs</text>
+  <line x1="427" y1="723" x2="601" y2="723" stroke="#e1eaec"/>
+  <text x="427" y="747" class="tiny">Dashboard: fixed aggregates</text>
+  <text x="427" y="766" class="tiny">Admin: manual SQL input</text>
+
+  <rect x="650" y="575" width="224" height="208" rx="13" class="card"/>
+  <text x="672" y="606" class="subhead">Prompt assembly</text>
+  <text x="672" y="636" class="body">Question + editable files:</text>
+  <text x="672" y="660" class="small">Schema / business context</text>
+  <text x="672" y="681" class="small">Few-shot examples / rules</text>
+  <text x="672" y="724" class="tiny">No raw flight rows or account</text>
+  <text x="672" y="743" class="tiny">records are sent to Gemini.</text>
+
+  <rect x="902" y="575" width="255" height="208" rx="13" class="amberbox"/>
+  <text x="924" y="606" class="subhead">SQL guardrail</text>
+  <text x="924" y="636" class="body">SQLGlot · T-SQL AST parse</text>
+  <text x="924" y="660" class="small">SELECT only · dbo table allowlist</text>
+  <text x="924" y="681" class="small">Reject comments / batches / DML</text>
+  <text x="924" y="702" class="small">System objects / dynamic SQL</text>
+  <text x="924" y="739" class="tiny">TOP if omitted · fetch max 50 rows</text>
+
+  <rect x="405" y="832" width="218" height="53" rx="11" fill="#ffffff" stroke="#dce7e9"/>
+  <text x="421" y="854" class="small" style="font-weight:700">Rotating app log</text>
+  <text x="421" y="874" class="tiny">Auth · queries · blocked/errors</text>
+
+  <!-- Local user store, LLM provider, and flight database -->
+  <rect x="1380" y="328" width="500" height="584" rx="22" class="external"/>
+  <text x="1408" y="362" class="section">CONNECTED SERVICES &amp; DATA</text>
+
+  <rect x="1410" y="385" width="440" height="124" rx="13" class="card"/>
+  <text x="1432" y="415" class="subhead">Local user store · JSON file</text>
+  <text x="1432" y="443" class="body">Username · Argon2 hash · role</text>
+  <text x="1432" y="472" class="small">A file store, not a second database</text>
+  <path d="M1327 475 H1408" class="arrow"/>
+  <text x="1363" y="462" text-anchor="middle" class="tiny">account lookup</text>
+
+  <rect x="1410" y="536" width="440" height="124" rx="13" fill="#edf4fc" stroke="#bdcfe1" stroke-width="1.3"/>
+  <text x="1432" y="567" class="subhead">Gemini API · google-genai</text>
+  <text x="1432" y="594" class="body">gemini-3.5-flash-lite</text>
+  <text x="1432" y="618" class="small">Structured JSON: sql · refusal_reason · explanation</text>
+  <text x="1432" y="642" class="tiny">Proposes SQL; it never executes SQL</text>
+
+  <g filter="url(#shadow)">
+    <rect x="1410" y="690" width="440" height="198" rx="15" fill="#ffffff" stroke="#9eb4c2" stroke-width="1.5"/>
+  </g>
+  <rect x="1410" y="690" width="440" height="43" rx="14" fill="#203f55"/>
+  <path d="M1410 718 H1850 V733 H1410 Z" fill="#203f55"/>
+  <text x="1432" y="718" style="fill:#ffffff;font-size:16px;font-weight:700">SQL Server · AirlinesProject</text>
+  <text x="1432" y="758" class="small">Existing database · read-only SELECT access</text>
+  <rect x="1430" y="774" width="118" height="42" rx="8" class="navybox"/>
+  <text x="1489" y="801" text-anchor="middle" class="mono">Airline</text>
+  <rect x="1560" y="774" width="118" height="42" rx="8" class="navybox"/>
+  <text x="1619" y="801" text-anchor="middle" class="mono">Airport</text>
+  <rect x="1690" y="774" width="140" height="42" rx="8" class="tealbox"/>
+  <text x="1760" y="801" text-anchor="middle" class="mono">FlightInstance</text>
+  <text x="1432" y="839" class="tiny">FlightInstance.carrier_code → Airline</text>
+  <text x="1432" y="858" class="tiny">origin_airport_code / destination_airport_code → Airport</text>
+  <text x="1432" y="876" class="tiny">No schema changes or database writes</text>
+
+  <!-- Main chat request: API -> prompt -> Gemini -> validator -> database. -->
+  <path d="M623 651 H641" class="arrow-teal"/>
+  <path d="M850 575 V545 H1408" class="arrow-teal"/>
+
+  <path d="M1410 641 H1365 V685 H1175 V651 H1150" class="arrow"/>
+  <rect x="1192" y="663" width="164" height="30" rx="9" class="label-bg"/>
+  <text x="1274" y="683" text-anchor="middle" class="tiny">candidate SQL</text>
+
+  <path d="M1157 735 H1370 V792 H1405" class="arrow-amber"/>
+  <rect x="1212" y="742" width="145" height="30" rx="9" class="label-bg"/>
+  <text x="1284" y="762" text-anchor="middle" class="tiny">validated SELECT</text>
+
+  <!-- Admin sends SQL directly to the same guardrail, without Gemini. -->
+  <path d="M603 575 V558 H1030 V574" class="arrow-amber dashed"/>
+  <text x="934" y="552" text-anchor="middle" class="tiny">admin SQL · direct to validator</text>
+
+  <!-- Dashboard uses fixed aggregate SELECTs and does not call Gemini. -->
+  <path d="M515 783 V795 H1405" class="arrow dashed"/>
+  <rect x="940" y="799" width="390" height="30" rx="9" class="label-bg"/>
+  <text x="1135" y="819" text-anchor="middle" class="tiny">dashboard fixed aggregates · bypass LLM + generated-SQL guard</text>
+
+  <!-- Auth, logging, and result paths. -->
+  <path d="M354 458 H395" class="arrow-teal"/>
+  <text x="374" y="446" text-anchor="middle" class="tiny">login</text>
+  <path d="M354 670 H405" class="arrow-teal"/>
+  <text x="379" y="659" text-anchor="middle" class="tiny">request</text>
+  <path d="M405 730 H354" class="arrow"/>
+  <text x="379" y="748" text-anchor="middle" class="tiny">JSON</text>
+  <path d="M515 523 V565" class="arrow"/>
+  <text x="530" y="548" class="tiny">verified role</text>
+
+  <path d="M470 783 V830" class="arrow dashed"/>
+  <path d="M1410 849 H1380 V930 H890 V800 H640 V740 H615" class="arrow dashed"/>
+  <rect x="930" y="905" width="440" height="35" rx="9" class="label-bg"/>
+  <text x="1150" y="928" text-anchor="middle" class="tiny">Rows / aggregates return to API → JSON → browser UI</text>
+
+  <!-- Legend -->
+  <rect x="54" y="974" width="1812" height="72" rx="14" fill="#ffffff" stroke="#dce7e9"/>
+  <line x1="82" y1="1001" x2="132" y2="1001" class="arrow-teal"/>
+  <text x="148" y="1006" class="small">request / trusted data flow</text>
+  <line x1="385" y1="1001" x2="435" y2="1001" class="arrow-amber"/>
+  <text x="451" y="1006" class="small">SQL validation / execution</text>
+  <line x1="690" y1="1001" x2="740" y2="1001" class="arrow dashed"/>
+  <text x="756" y="1006" class="small">fixed query / response / logging path</text>
+  <text x="82" y="1030" class="tiny">Architecture note: account JSON is not a database; CSV loading is a prior offline step, not a live app feature.</text>
+  <text x="1834" y="1030" text-anchor="end" class="tiny">16:9 · Canva / PowerPoint ready</text>
+</svg>

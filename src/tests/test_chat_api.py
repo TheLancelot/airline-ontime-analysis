@@ -60,7 +60,36 @@ def test_chat_serializes_database_rows_for_json(monkeypatch):
 
     assert response.status_code == 200
     assert response.json()["rows"] == [["AA", "American Airlines"]]
+    assert "sql" not in response.json()
     assert connection.closed
+
+
+def test_chat_returns_generated_sql_to_admin_only(monkeypatch):
+    connection = FakeConnection()
+    monkeypatch.setattr(chat_routes, "get_sql_server_connection", lambda: connection)
+    monkeypatch.setattr(
+        chat_routes.GeminiClient,
+        "generate_sql",
+        lambda self, question: {
+            "sql": "SELECT carrier_code, airline_name FROM dbo.Airline",
+            "refusal_reason": None,
+            "explanation": "Lists carriers.",
+        },
+    )
+    app.dependency_overrides[get_current_user] = lambda: {
+        "username": "demo_admin",
+        "role": "admin",
+    }
+
+    try:
+        response = TestClient(app).post("/api/chat", json={"question": "List carriers"})
+    finally:
+        app.dependency_overrides.pop(get_current_user, None)
+
+    assert response.status_code == 200
+    assert response.json()["sql"] == (
+        "SELECT TOP 250 carrier_code, airline_name FROM dbo.Airline"
+    )
 
 
 def test_chat_returns_visible_gateway_error_when_gemini_fails(monkeypatch):

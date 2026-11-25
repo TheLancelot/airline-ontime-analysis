@@ -60,6 +60,17 @@ a { color: var(--teal-dark); }
   border-radius: 9px;
   background: rgba(255,255,255,.55);
 }
+.session-welcome { color: #536a78; font-size: 12px; font-weight: 600; white-space: nowrap; }
+.nav-logout {
+  padding: 8px 11px;
+  border: 1px solid #cfe0e0;
+  border-radius: 9px;
+  background: #fff;
+  color: var(--teal-dark);
+  cursor: pointer;
+  font: 600 12px 'Segoe UI', Arial, sans-serif;
+}
+.nav-logout:disabled { opacity: .65; cursor: wait; }
 
 .hero-shell { width: min(1120px, calc(100% - 48px)); margin: 0 auto; }
 .hero {
@@ -251,7 +262,7 @@ input:focus, textarea:focus { border-color: #52a9a4; box-shadow: 0 0 0 3px rgba(
 
 @media (max-width: 760px) {
   .site-header { width: calc(100% - 30px); height: 70px; }
-  .site-nav { gap: 13px; }
+  .site-nav { gap: 10px; }
   .site-nav a { font-size: 11px; }
   .site-nav .nav-admin { padding: 8px 9px; }
   .hero { grid-template-columns: 1fr; gap: 35px; padding: 52px 5px 35px; }
@@ -268,9 +279,11 @@ input:focus, textarea:focus { border-color: #52a9a4; box-shadow: 0 0 0 3px rgba(
 
 @media (max-width: 420px) {
   .brand { font-size: 16px; }
-  .site-nav { gap: 8px; }
+  .site-nav { gap: 6px; }
   .site-nav a { font-size: 10px; }
   .site-nav .nav-admin { padding: 7px; }
+  .session-welcome { font-size: 10px; }
+  .nav-logout { padding: 7px; font-size: 10px; }
   .dashboard-grid { grid-template-columns: 1fr 1fr; gap: 9px; }
   .metric-card { min-height: 115px; padding: 15px; }
   .metric-value { font-size: 23px; }

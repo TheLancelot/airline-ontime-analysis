@@ -31,7 +31,19 @@ Use the shared virtual environment:
 & 'D:\college_coding\.common_venv\Scripts\python.exe' -m uvicorn app.main:app --reload
 ```
 
-Open `http://127.0.0.1:8000`. The landing page links to registration, login, and the admin sign-in flow. Registration leads to login; after login, regular users go to the dashboard and admins go to the SQL console.
+Open `http://127.0.0.1:8000`. The landing page links to registration, login, and the admin sign-in flow. Registration leads to login; after login, regular users go to the dashboard and admins go to the SQL console. Authenticated pages greet the signed-in user and provide a logout action.
+
+## Create an admin account
+
+Run this from any folder in PowerShell; the script locates the DBMS project and its `src\.env` automatically:
+
+```powershell
+& 'D:\college_coding\.common_venv\Scripts\python.exe' 'D:\college_coding\airline_ontime_analysis\src\scripts\create_admin.py' admin_name
+```
+
+You can omit `admin_name` to be prompted for it. The script securely prompts for the password twice; passwords are not command-line arguments. Passwords must be at least 8 characters and contain uppercase, lowercase, and a number.
+
+If that username already has a regular account, the script will ask for that account's current password before promoting it to admin. If it is already an admin, no change is made. After creation or promotion, log in through the app; admin accounts are routed to the SQL console.
 
 ## Tests
 
@@ -44,7 +56,7 @@ Run from this folder:
 ## Demo outline
 
 1. Register a regular user and log in to view the dashboard.
-2. Ask a read-only question in chat and inspect the validated SQL.
+2. Ask a read-only question in chat; admins can inspect the validated SQL.
 3. Use an admin account to open the SQL console and review recent logs.
 4. Try a blocked statement such as `DROP TABLE dbo.Airline` and confirm it is refused.
 

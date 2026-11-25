@@ -4,7 +4,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Log in · Airline Insights</title>
-    <link rel="stylesheet" href="/static/styles.css?v=2" />
+    <link rel="stylesheet" href="/static/styles.css?v=3" />
   </head>
   <body>
     <header class="site-header">
@@ -60,9 +60,20 @@
 
       const registered = params.get('registered');
       if (registered === '1') {
-        showNotice('Your account is ready. Log in to continue to your dashboard.', 'notice-success');
+        message.replaceChildren(
+          document.createTextNode('Your account is ready. '),
+          Object.assign(document.createElement('a'), {
+            href: `/login?username=${encodeURIComponent(params.get('username') || '')}`,
+            textContent: 'Log in'
+          }),
+          document.createTextNode(' to continue to your dashboard.')
+        );
+        message.className = 'notice notice-success';
+        message.hidden = false;
       } else if (params.get('admin') === 'required') {
         showNotice('This account does not have admin access. You are signed in to the user dashboard instead.', 'notice-error');
+      } else if (params.get('logged_out') === '1') {
+        showNotice('You have been logged out.', 'notice-success');
       }
 
       form.addEventListener('submit', async (event) => {

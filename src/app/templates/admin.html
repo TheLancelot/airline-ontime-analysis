@@ -4,7 +4,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Admin console · Airline Insights</title>
-    <link rel="stylesheet" href="/static/styles.css?v=2" />
+    <link rel="stylesheet" href="/static/styles.css?v=3" />
   </head>
   <body>
     <header class="site-header">
@@ -13,6 +13,8 @@
         <a href="/dashboard">Dashboard</a>
         <a href="/chat">Ask a question</a>
         <a class="active nav-admin" href="/admin">Admin console</a>
+        <span class="session-welcome" id="sessionWelcome" hidden></span>
+        <button class="nav-logout" id="logoutButton" type="button">Log out</button>
       </nav>
     </header>
     <main class="app-shell">
@@ -133,5 +135,6 @@
         }
       });
     </script>
+    <script src="/static/app.js?v=3"></script>
   </body>
 </html>

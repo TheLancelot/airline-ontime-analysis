@@ -50,7 +50,6 @@ async def chat_endpoint(payload: dict, request: Request, current_user: dict = De
             "explanation": explanation,
             "columns": [],
             "rows": [],
-            "sql": "",
         }
 
     validation = validate_select_sql(sql)
@@ -67,7 +66,6 @@ async def chat_endpoint(payload: dict, request: Request, current_user: dict = De
             "explanation": explanation,
             "columns": [],
             "rows": [],
-            "sql": "",
         }
 
     try:
@@ -79,7 +77,11 @@ async def chat_endpoint(payload: dict, request: Request, current_user: dict = De
                 "explanation": "The app is running in offline demo mode because SQL Server is not configured.",
                 "columns": ["airport_code", "airport_name"],
                 "rows": [["ATL", "Hartsfield-Jackson Atlanta International Airport"]],
-                "sql": validation.normalized_sql,
+                **(
+                    {"sql": validation.normalized_sql}
+                    if current_user["role"] == "admin"
+                    else {}
+                ),
             }
 
         safe_sql = validation.normalized_sql
@@ -97,14 +99,16 @@ async def chat_endpoint(payload: dict, request: Request, current_user: dict = De
             safe_sql,
             len(rows),
         )
-        return {
+        result = {
             "status": "ok",
             "refusal_reason": None,
             "explanation": explanation,
             "columns": columns,
             "rows": rows,
-            "sql": safe_sql,
         }
+        if current_user["role"] == "admin":
+            result["sql"] = safe_sql
+        return result
     except Exception as exc:
         logger.exception("chat_exception | username=%s | question=%s", current_user["username"], question)
         return {
@@ -113,5 +117,4 @@ async def chat_endpoint(payload: dict, request: Request, current_user: dict = De
             "explanation": "The query could not be completed.",
             "columns": [],
             "rows": [],
-            "sql": sql,
         }

@@ -1,13 +1,25 @@
 from __future__ import annotations
 
-from fastapi import APIRouter, HTTPException, Response
+from fastapi import APIRouter, Depends, HTTPException, Response
 
+from app.api.deps import get_current_user
 from app.auth.models import UserRole
 from app.auth.service import auth_service
 from app.logging_conf import get_logger
 
 router = APIRouter(prefix="/api", tags=["auth"])
 logger = get_logger("auth")
+
+
+@router.get("/me")
+async def current_user_info(current_user: dict = Depends(get_current_user)):
+    return current_user
+
+
+@router.post("/logout")
+async def logout_user(response: Response):
+    response.delete_cookie(key="access_token", httponly=True, samesite="lax")
+    return {"message": "Logged out"}
 
 
 @router.post("/register")
