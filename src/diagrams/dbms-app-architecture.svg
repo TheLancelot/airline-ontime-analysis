@@ -123,7 +123,7 @@
   <text x="427" y="681" class="mono">/api/admin/query</text>
   <text x="427" y="704" class="mono">/api/admin/logs</text>
   <line x1="427" y1="723" x2="601" y2="723" stroke="#e1eaec"/>
-  <text x="427" y="747" class="tiny">Dashboard: fixed aggregates</text>
+  <text x="427" y="747" class="tiny">Dashboard: exact precomputed snapshot</text>
   <text x="427" y="766" class="tiny">Admin: manual SQL input</text>
 
   <rect x="650" y="575" width="224" height="208" rx="13" class="card"/>
@@ -199,7 +199,7 @@
   <!-- Dashboard uses fixed aggregate SELECTs and does not call Gemini. -->
   <path d="M515 783 V795 H1405" class="arrow dashed"/>
   <rect x="940" y="799" width="390" height="30" rx="9" class="label-bg"/>
-  <text x="1135" y="819" text-anchor="middle" class="tiny">dashboard fixed aggregates · bypass LLM + generated-SQL guard</text>
+  <text x="1135" y="819" text-anchor="middle" class="tiny">dashboard precomputed values · no runtime scan · bypass LLM + generated-SQL guard</text>
 
   <!-- Auth, logging, and result paths. -->
   <path d="M354 458 H395" class="arrow-teal"/>

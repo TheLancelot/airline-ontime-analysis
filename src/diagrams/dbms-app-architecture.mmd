@@ -19,7 +19,7 @@ flowchart LR
     ROUTES["Protected API routes<br/>/api/chat<br/>/api/dashboard<br/>/api/admin/query<br/>/api/admin/logs"]
     PROMPT["Prompt assembly<br/>Schema + business context<br/>Few-shot examples + rules"]
     VALIDATOR["SQL guardrail<br/>SQLGlot T-SQL AST<br/>SELECT-only · dbo table allowlist<br/>Block comments, batches, DML,<br/>system objects, dynamic SQL<br/>TOP default · fetch max 50"]
-    DASH["Dashboard fixed aggregate SELECTs<br/>No LLM generation"]
+    DASH["Dashboard exact precomputed snapshot<br/>No runtime full-table scan · no LLM generation"]
     LOG["Rotating application log<br/>Auth · chat · admin · blocked/error events"]
 
     HEADERS --> AUTH --> ROUTES

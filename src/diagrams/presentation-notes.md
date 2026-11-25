@@ -9,7 +9,7 @@
 
 1. **Data preparation:** BTS on-time CSV files were loaded into the already-existing `AirlinesProject` SQL Server database before the web app runs. CSV ingestion is not an app endpoint.
 2. **Authentication:** users register as `user`; passwords are Argon2-hashed. Login issues an HttpOnly JWT cookie with the role. FastAPI dependencies check authentication and admin privileges on protected APIs.
-3. **Two query paths:** the dashboard runs fixed aggregate SELECTs. Chat and the admin console use the SQL validation path; the admin enters SQL directly, while chat first asks Gemini to propose SQL.
+3. **Two query paths:** the dashboard serves exact precomputed values from the current static dataset, avoiding a runtime full-table scan. Refresh its snapshot constants if the data changes. Chat and the admin console use the SQL validation path; the admin enters SQL directly, while chat first asks Gemini to propose SQL.
 4. **LLM boundary:** Gemini receives the question and editable schema/business/rule prompt context, not database rows or user account records. Gemini only proposes structured SQL/refusal/explanation JSON.
 5. **Guardrails:** generated chat SQL and admin SQL pass through the SQLGlot T-SQL validator before execution. It permits SELECTs against the three `dbo` tables and rejects dangerous statements and constructs. The application returns bounded rows to the interface.
 6. **Results and audit:** the UI displays data as tables/charts. Only admins can inspect generated SQL; regular users see results and explanations. Authentication, query, and blocked/error events go to a rotating local log.

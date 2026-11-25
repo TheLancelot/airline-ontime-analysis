@@ -33,7 +33,7 @@ Use the shared virtual environment:
 
 Open `http://127.0.0.1:8000`. The landing page links to registration, login, and the admin sign-in flow. Registration leads to login; after login, regular users go to the dashboard and admins go to the SQL console. Authenticated pages greet the signed-in user and provide a logout action.
 
-Dashboard API results are cached in memory for five minutes by default to avoid repeating the full-table aggregates on every page visit. Set `DASHBOARD_CACHE_TTL_SECONDS` in `.env` to change this interval. Cache storage is per app process; restarting the app clears it.
+The dashboard serves exact values precomputed from the current static `AirlinesProject` data, so loading the dashboard does not scan the 3.4M-row flight table. If the SQL Server dataset changes, update the snapshot constants in `app/api/routes/dashboard.py`.
 
 ## Create an admin account
 

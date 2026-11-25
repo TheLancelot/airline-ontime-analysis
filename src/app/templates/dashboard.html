@@ -26,13 +26,13 @@
         <div>
           <p class="eyebrow">YOUR FLIGHT DATA OVERVIEW</p>
           <h1>Performance snapshot</h1>
-          <p>A quick look at airline, airport, and delay patterns. Results are briefly cached to reduce repeat database work.</p>
+          <p>Exact precomputed values from the current static dataset. Refresh the snapshot if the database changes.</p>
         </div>
         <a class="button button-primary" href="/chat">Ask about the data</a>
       </section>
       <div id="dashboardMessage" class="notice page-message" role="status" aria-live="polite" hidden></div>
       <section class="dashboard-grid" aria-label="Flight data summary">
-        <article class="metric-card"><div class="metric-label">Flight records</div><div class="metric-value" id="totalFlights">—</div><div class="metric-note">In the current dataset</div></article>
+        <article class="metric-card"><div class="metric-label">Flight records</div><div class="metric-value" id="totalFlights">—</div><div class="metric-note">Exact count from current snapshot</div></article>
         <article class="metric-card"><div class="metric-label">Carriers</div><div class="metric-value" id="totalCarriers">—</div><div class="metric-note">Airlines represented</div></article>
         <article class="metric-card"><div class="metric-label">Airports</div><div class="metric-value" id="totalAirports">—</div><div class="metric-note">In the airport reference table</div></article>
         <article class="metric-card"><div class="metric-label">Average arrival delay</div><div class="metric-value" id="averageDelay">—</div><div class="metric-note">Minutes · negative values mean early</div></article>
@@ -43,7 +43,7 @@
         <div class="panel-heading">
           <div>
             <h2>Average arrival delay by carrier</h2>
-            <p>Only flights with a recorded arrival delay are included. Negative values mean early arrivals.</p>
+            <p>Exact average arrival delay by airline. Negative values mean early arrivals.</p>
           </div>
           <span class="feature-icon">CARRIER COMPARISON</span>
         </div>
@@ -114,7 +114,14 @@
               options: {
                 maintainAspectRatio: false,
                 responsive: true,
-                plugins: { legend: { display: false } },
+                plugins: {
+                  legend: { display: false },
+                  tooltip: {
+                    callbacks: {
+                      label: (context) => `${Number(context.raw).toFixed(1)} min`
+                    }
+                  }
+                },
                 scales: {
                   x: {
                     grid: { display: false },

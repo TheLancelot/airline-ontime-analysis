@@ -32,7 +32,6 @@ class Settings:
     ALLOWED_TABLES = {"airline", "airport", "flightinstance"}
     MAX_ROWS = 250
     MAX_QUERY_SECONDS = 30
-    DASHBOARD_CACHE_TTL_SECONDS = int(os.getenv("DASHBOARD_CACHE_TTL_SECONDS", "300"))
     MAX_LOG_LINES = 200
 
 
