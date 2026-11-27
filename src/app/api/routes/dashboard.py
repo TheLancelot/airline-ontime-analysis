@@ -34,7 +34,6 @@ DASHBOARD_SNAPSHOT = {
     ),
 }
 
-
 @router.get("/dashboard")
 async def dashboard_data(current_user: dict = Depends(get_current_user)):
     logger.info("dashboard_snapshot_served | username=%s", current_user["username"])
